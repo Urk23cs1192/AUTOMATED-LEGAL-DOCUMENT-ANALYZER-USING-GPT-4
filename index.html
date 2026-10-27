@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LegalLens AI | Legal Document Analyzer</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="brand">⚖️ LegalLens <span>AI</span></div>
+    <div class="nav-label">GPT-Powered Document Intelligence</div>
+</header>
+
+<main class="container">
+
+    <section class="hero">
+        <div class="eyebrow">SMART LEGAL DOCUMENT ANALYSIS</div>
+
+        <h1>Understand every clause.<br>
+            <span>With greater clarity.</span>
+        </h1>
+
+        <p>
+            Transform lengthy legal documents into structured summaries,
+            key obligations, important dates, and clause-level insights.
+        </p>
+    </section>
+
+    <section class="workspace">
+
+        <div class="section-heading">
+            <div>
+                <h2>Analyze your document</h2>
+                <p>Upload a text file or paste your legal document below.</p>
+            </div>
+            <div class="step-tag">STEP 01</div>
+        </div>
+
+        {% if error %}
+        <div class="alert">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST"
+              enctype="multipart/form-data"
+              id="analyzerForm">
+
+            <label class="upload-box" for="document_file">
+                <div class="upload-icon">↑</div>
+                <h3>Upload your legal document</h3>
+                <p>Choose a UTF-8 .txt file · Maximum 1 MB</p>
+                <span class="upload-button">Choose File</span>
+                <input type="file"
+                       name="document_file"
+                       id="document_file"
+                       accept=".txt">
+                <div id="fileName" class="file-name"></div>
+            </label>
+
+            <div class="separator"><span>OR</span></div>
+
+            <label for="document_text" class="field-label">
+                Paste document text
+            </label>
+
+            <textarea
+                name="document_text"
+                id="document_text"
+                rows="9"
+                placeholder="Paste your employment agreement, NDA, rental agreement, service contract, or other legal document here..."
+            >{{ document_text }}</textarea>
+
+            <div class="privacy-note">
+                <span>ⓘ</span>
+                Use sample or appropriately redacted documents.
+                Submitted text is sent to the configured AI API for analysis.
+            </div>
+
+            <button type="submit" id="analyzeButton">
+                <span>✦</span> Analyze Document
+            </button>
+
+        </form>
+    </section>
+
+    {% if analysis %}
+
+    <section class="results" id="results">
+
+        <div class="result-header">
+            <div>
+                <div class="eyebrow">ANALYSIS COMPLETE</div>
+                <h2>Your legal analysis</h2>
+                <p>Review the extracted information below.</p>
+            </div>
+
+            <form action="{{ url_for('download_report') }}"
+                method="GET">
+                <input type="hidden"
+                       name="analysis"
+                       value="{{ analysis }}">
+                <button type="submit" class="download-button">
+                    ↓ Download Report
+                </button>
+            </form>
+        </div>
+
+        <div class="result-card">
+            <div class="result-card-title">
+                <span>✧</span> STRUCTURED DOCUMENT REPORT
+            </div>
+
+            <pre class="analysis-text">{{ analysis }}</pre>
+        </div>
+
+        <p class="disclaimer">
+            Important: AI-generated results may omit or misinterpret
+            legal details. Verify the original document and consult a
+            qualified legal professional before making decisions.
+        </p>
+
+    </section>
+
+    {% endif %}
+
+    <section class="features">
+        <div class="feature">
+            <span class="feature-icon">⌕</span>
+            <h3>Clause Identification</h3>
+            <p>Find key clauses and obligations.</p>
+        </div>
+
+        <div class="feature">
+            <span class="feature-icon">≡</span>
+            <h3>Smart Summaries</h3>
+            <p>Understand lengthy text faster.</p>
+        </div>
+
+        <div class="feature">
+            <span class="feature-icon">◷</span>
+            <h3>Date Extraction</h3>
+            <p>Identify dates and contract duration.</p>
+        </div>
+
+        <div class="feature">
+            <span class="feature-icon">↓</span>
+            <h3>Exportable Results</h3>
+            <p>Save your analysis as a text report.</p>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>LegalLens AI · 24CS2506 · Experiment 5</p>
+    <p>Educational prototype — not a substitute for legal advice.</p>
+</footer>
+
+<script>
+    const fileInput = document.getElementById("document_file");
+    const fileName = document.getElementById("fileName");
+    const form = document.getElementById("analyzerForm");
+    const analyzeButton = document.getElementById("analyzeButton");
+
+    fileInput.addEventListener("change", function () {
+        fileName.textContent = this.files.length
+            ? "Selected: " + this.files[0].name
+            : "";
+    });
+
+    form.addEventListener("submit", function () {
+        analyzeButton.disabled = true;
+        analyzeButton.textContent = "Analyzing document...";
+    });
+</script>
+
+</body>
+</html>
